@@ -11,7 +11,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
- * @ApiResource
+ * @ApiResource(
+ *      normalizationContext = {"groups"={"user:read"}},
+ *      denormalizationContext = {"groups"={"user:write"}},
+ *  * )
  */
 class User implements UserInterface
 {
@@ -19,27 +22,44 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * 
+     * @Groups("user:read")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * 
+     * @Groups("user:read", "user:write")
      */
     private $email;
 
     /**
      * @ORM\Column(type="json")
+     * 
+     * @Groups("user:read")
      */
     private $roles = [];
 
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * 
+     * @Groups("user:write")
      */
     private $password;
 
     /**
+     * @Groups("user:write")
+     * 
+     * @SerializedName("password")
+     */
+    private $plainPassword;
+
+    /**
      * @ORM\Column(type="boolean")
+     * 
+     * @Groups("user:read", "user:write")
      */
     private $isVerified = false;
 
