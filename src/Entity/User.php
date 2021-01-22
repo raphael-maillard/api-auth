@@ -5,39 +5,44 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
+ * 
  * @ApiResource(
- *      normalizationContext = {"groups"={"user:read"}},
- *      denormalizationContext = {"groups"={"user:write"}},
- *  * )
+ *     normalizationContext={"groups"={"user", "user:read"}},
+ *     denormalizationContext={"groups"={"user", "user:write"}}
+ * )
+ * 
+ * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
  */
+
 class User implements UserInterface
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * 
-     * @Groups("user:read")
+     *
+     * @Groups("user:read") 
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * 
-     * @Groups("user:read", "user:write")
+     * @Groups({"user"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="json")
      * 
-     * @Groups("user:read")
+     * @Groups({"user"})
      */
     private $roles = [];
 
@@ -45,13 +50,13 @@ class User implements UserInterface
      * @var string The hashed password
      * @ORM\Column(type="string")
      * 
-     * @Groups("user:write")
+     * @Groups({"user"})
      */
     private $password;
 
     /**
-     * @Groups("user:write")
      * 
+     * @Groups({"user"})
      * @SerializedName("password")
      */
     private $plainPassword;
@@ -59,7 +64,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="boolean")
      * 
-     * @Groups("user:read", "user:write")
+     * @Groups({"user"})
      */
     private $isVerified = false;
 
@@ -127,6 +132,21 @@ class User implements UserInterface
     /**
      * @see UserInterface
      */
+    public function getPlainPassword(): string
+    {
+        return (string) $this->plainPassword;
+    }
+
+    public function setPlainPassword(string $password): self
+    {
+        $this->plainPassword = $password;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
     public function getSalt()
     {
         // not needed when using the "bcrypt" algorithm in security.yaml
@@ -138,7 +158,7 @@ class User implements UserInterface
     public function eraseCredentials()
     {
         // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        $this->plainPassword = null;
     }
 
     public function isVerified(): bool
