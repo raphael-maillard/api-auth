@@ -11,8 +11,6 @@ class UserFixtures extends Fixture
 {
 
     private $encoder;
-    private $structureRepository;
-    private $buildingRepository;
 
     public function __construct(UserPasswordEncoderInterface $encoder)
     {
@@ -21,15 +19,14 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        $users = [
-           
-        ];
+        // $faker = \Faker\Factory::create('fr_FR');
+        $faker = \Faker\Factory::create();
 
-        for($i = 0; $i < count($users); ++$i){
+
+        for($i = 0; $i < 11 ; ++$i){
             $user = new User();
-            $user->setRoles($users[$i]['roles']);
-            $user->setEmail($users[$i]['email']);
-            $user->setPassword($this->encoder->encodePassword($user, $users[$i]['password']));
+            $user->setEmail($faker->email());
+            $user->setPassword($this->encoder->encodePassword($user, "mdp"));
 
             $manager->persist($user);
         }
@@ -37,3 +34,4 @@ class UserFixtures extends Fixture
         $manager->flush();
     }
 }
+?>
