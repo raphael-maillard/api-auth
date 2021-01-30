@@ -42,7 +42,8 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.4",
-        "symfony/maker-bundle": "^1.28"
+        "symfony/maker-bundle": "^1.28",
+        "symfony/phpunit-bridge": "^5.2"
     },
     "config": {
         "optimize-autoloader": true,
